@@ -19,13 +19,60 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+    return redirect('/redirect-by-role');
+})->middleware(['auth'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+// ================= ADMIN =================
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->group(function () {
+
+        Route::get('/dashboard', function () {
+            return view('admin.dashboard');
+        });
+
+    });
+
+// ================= GURU =================
+Route::middleware(['auth', 'role:guru_mapel'])
+    ->prefix('guru')
+    ->group(function () {
+
+        Route::get('/dashboard', function () {
+            return 'DASHBOARD GURU';
+        });
+
+    });
+
+// ================= WALI =================
+Route::middleware(['auth', 'role:wali_kelas'])
+    ->prefix('wali')
+    ->group(function () {
+
+        Route::get('/dashboard', function () {
+            return 'DASHBOARD WALI';
+        });
+
+    });
+
+Route::get('/redirect-by-role', function () {
+    $role = auth()->user()->role;
+
+    if ($role === 'admin') {
+        return redirect('/admin/dashboard');
+    } elseif ($role === 'guru_mapel') {
+        return redirect('/guru/dashboard');
+    } elseif ($role === 'wali_kelas') {
+        return redirect('/wali/dashboard');
+    }
+
+    abort(403);
+})->middleware('auth');
 
 require __DIR__.'/auth.php';

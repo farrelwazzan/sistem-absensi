@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
+            $table->string('role')->default('guru_mapel');
             $table->json('roles')->nullable()->after('password');
             $table->string('nip')->nullable()->unique()->after('roles');
             $table->string('phone', 15)->nullable()->after('nip');
