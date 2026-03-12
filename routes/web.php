@@ -22,24 +22,40 @@ Route::get('/dashboard', function () {
     return redirect('/redirect-by-role');
 })->middleware(['auth'])->name('dashboard');
 
+use App\Http\Controllers\SiswaController;
+
+
+/*
+|--------------------------------------------------------------------------
+| ADMIN ROUTES
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth','role:admin'])->prefix('admin')->group(function () {
+    Route::get('/dashboard', function () {
+            return view('admin.dashboard');
+        });
+    Route::resource('siswa', SiswaController::class);
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| PROFILE
+|--------------------------------------------------------------------------
+*/
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// ================= ADMIN =================
-Route::middleware(['auth', 'role:admin'])
-    ->prefix('admin')
-    ->group(function () {
-
-        Route::get('/dashboard', function () {
-            return view('admin.dashboard');
-        });
-
-    });
-
-// ================= GURU =================
+/*
+|--------------------------------------------------------------------------
+| GURU
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth', 'role:guru_mapel'])
     ->prefix('guru')
     ->group(function () {
@@ -50,7 +66,11 @@ Route::middleware(['auth', 'role:guru_mapel'])
 
     });
 
-// ================= WALI =================
+/*
+|--------------------------------------------------------------------------
+| WALI KELAS
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth', 'role:wali_kelas'])
     ->prefix('wali')
     ->group(function () {
@@ -60,6 +80,12 @@ Route::middleware(['auth', 'role:wali_kelas'])
         });
 
     });
+
+/*
+|--------------------------------------------------------------------------
+| REDIRECT ROLE
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/redirect-by-role', function () {
     $role = auth()->user()->role;
