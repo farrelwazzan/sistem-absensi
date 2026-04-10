@@ -23,7 +23,7 @@ Route::get('/dashboard', function () {
 })->middleware(['auth'])->name('dashboard');
 
 use App\Http\Controllers\SiswaController;
-
+use App\Http\Controllers\GuruController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,6 +36,7 @@ Route::middleware(['auth','role:admin'])->prefix('admin')->group(function () {
             return view('admin.dashboard');
         });
     Route::resource('siswa', SiswaController::class);
+    Route::resource('guru', GuruController::class);
 
 });
 
